@@ -12,18 +12,10 @@ Status: active development. [Release notes](releases).
 
 [GPL 3.0](https://opensource.org/licenses/gpl-3.0.html)
 
-Using, building, testing
+## Using, building, testing
 
-ohco2 is compiled for both the JVM and ScalaJS using scala 2.11. Binaries for all platforms are available from jcenter. If you are using sbt, include Resolver.jcenterRepoin your list of resolvers
+`lcs-scs` is compiled for both the JVM and ScalaJS using scala 2.10, 2.11 and 2.12.
 
-resolvers += Resolver.jcenter
-and add this to your library dependencies:
+To build from source and test for a given version, use normal sbt commands (`compile`, `test` ...).
 
-"edu.holycross.shot.cite" %% "ohco2" % VERSION
-For maven, ivy or gradle equivalents, refer to https://bintray.com/neelsmith/maven/ohco2.
-
-To build from source and test for a given version, use normal sbt commands (compile, test ...).
-
-You can also test or run tasks against all versions, using + before the task name. E.g., sbt "+ test" runs the test task against all versions.
-
-ohco2 is used by the CITE library manager scm. The scm wiki at https://github.com/cite-architecture/scm/wiki includes examples of how to create an ohco2 TextRepository from local files in various formats.
+You can also test or run tasks against all versions, using + before the task name. E.g., `sbt "+ test"` runs the test task against all versions.
