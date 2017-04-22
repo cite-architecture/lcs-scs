@@ -16,6 +16,9 @@ class SequenceCompSpec extends FlatSpec {
     assert(sc.lcs == Vector(2,3))
   }
 
+  it should "treat Strings as Vectors of Chars" in pending
+  
+
 
 
 }

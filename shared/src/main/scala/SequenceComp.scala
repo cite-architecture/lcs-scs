@@ -4,9 +4,24 @@ import js.annotation.JSExport
 import scala.collection.mutable.ArrayBuffer
 
 
+/** Functions comparing pairs of vectors.
+*
+* @param v1 First Vector to compare.
+* @param v2 Seond Vector to compare.
+*/
 @JSExport class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
 
 
+
+  /** Compute Longest Common Subsequence for two Vectors of objects.
+  * First compares each pair of elements in the two Vectors
+  * and saves the resulting counts of the lenght of common Vectors in a memoizing array,
+  * then walks back through the memoizing array to recover the common values in
+  * each of the two Vectors.
+  *
+  * Compare the textbook discussion at http://introcs.cs.princeton.edu/java/23recursion/
+  * with accompanying java impementation at http://introcs.cs.princeton.edu/java/23recursion/LongestCommonSubsequence.java.html
+  */
   def  lcs : Vector[T] = {
     val memo = Array.ofDim[Int](v1.size + 1, v2.size + 1)
     for {
@@ -40,8 +55,18 @@ import scala.collection.mutable.ArrayBuffer
   }
 }
 
+/** Factory for making [[SequenceComp]] objects directly from
+* pairs of Vectors.
+*/
 object SequenceComp {
-  def apply[T ](v1: Vector[T],  v2: Vector[T] ) = {
+
+  /** Create a [[SequenceComp]] from two Vectors.
+  *
+  * @param v1 First Vector.
+  * @param v2 Second Vector.
+  */
+  def apply[T] (v1: Vector[T],  v2: Vector[T] ) = {
     new SequenceComp(v1, v2)
   }
+
 }
