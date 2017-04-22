@@ -77,7 +77,6 @@ import scala.annotation.tailrec
       mashup.toVector ++ src1 ++ src2
 
     } else {
-      println("mashup " + mashup.mkString + ", overlap is at " + overlap(0) + " inits are " + src1(0) + "," + src2(0))
       if ((src1(0) == overlap(0)) && (src2(0) == overlap(0))) {
         // common to both. Add first element to mashup, and
         // remove first element from all vectors.
