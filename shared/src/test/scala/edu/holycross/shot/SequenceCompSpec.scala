@@ -17,8 +17,11 @@ class SequenceCompSpec extends FlatSpec {
   }
 
   it should "treat Strings as Vectors of Chars" in pending
-  
 
+  it should "compute SCS" in pending /*{
+    val sc = SequenceComp(Vector("a","b","c"), Vector("b","c","d"))
+    assert(sc.scs.mkString == "abcd")
+  }*/
 
 
 }
