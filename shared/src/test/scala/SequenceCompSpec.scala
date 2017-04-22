@@ -36,6 +36,20 @@ class SequenceCompSpec extends FlatSpec {
   it should "compute put v1 first in SCS when first two elements disagree" in {
     val sc = SequenceComp(Vector(1,2,3), Vector(2,4,5))
     assert(sc.scs.mkString == "12345")
+
+  }
+
+  it should "compute SCS equivalent to vector addition when there is no overlap" in {
+    val sc = SequenceComp(Vector(1,2,3), Vector(4,5))
+    assert(sc.scs.mkString == "12345")
+  }
+
+  it should "append trailing to SCS" in {
+    val v1 = Vector(1,2,3,5)
+    val v2 = Vector(3,4,5,6)
+    val sc = SequenceComp( v1,v2)
+    println("LCS = " + sc.lcs.mkString)
+    assert(sc.scs.mkString == "123456")
   }
 
 }

@@ -14,7 +14,7 @@ import scala.annotation.tailrec
   /** Create a memoizing array by comparing each pair of elements in [[v1]] and [[v2]]
   * and saving the resulting counts of the length of the common Vector (or lcs) at that point.
   */
-  def memo = {
+  def memo: Array[Array[Int]] = {
     val memoized = Array.ofDim[Int](v1.size + 1, v2.size + 1)
     for {
         i <- v1.size - 1 to 0 by -1
@@ -29,8 +29,8 @@ import scala.annotation.tailrec
     memoized
   }
 
-  /** Compute Longest Common Subsequence for two Vectors of objects.
-  * Walk back through the memoizing array to recover the common values in
+  /** Compute Longest Common Subsequence for two Vectors of objects by
+  * walking back through the memoizing array to recover the common values in
   * each of the two Vectors.
   *
   * Compare the textbook discussion at http://introcs.cs.princeton.edu/java/23recursion/
@@ -72,39 +72,38 @@ import scala.annotation.tailrec
   * @param overlap Common vector (LCS of src1 and src2).
   * @param mashup Accumulator with previously inserted elements.
   */
-  @tailrec final def  insertSingles(src1: Vector[T], src2: Vector[T],overlap: Vector[T], mashup: ArrayBuffer[T]) : Vector[T] = {
+  @tailrec final def  insertSingles(src1: Vector[T], src2: Vector[T], overlap: Vector[T], mashup: ArrayBuffer[T]) : Vector[T] = {
     if (overlap.size == 0){
       mashup.toVector ++ src1 ++ src2
-      
+
     } else {
+      println("mashup " + mashup.mkString + ", overlap is at " + overlap(0) + " inits are " + src1(0) + "," + src2(0))
       if ((src1(0) == overlap(0)) && (src2(0) == overlap(0))) {
-        // common to both.  Remove first element from all vectors.
-        //println("Common to both")
+        // common to both. Add first element to mashup, and
+        // remove first element from all vectors.
+        val mashed = mashup += overlap(0)
         if (overlap.size == 1) {
-          val mashed = mashup += overlap(0)
-          mashed.toVector  ++ src1.drop(1) ++ src2.drop(1)
-        }  else {
-          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup)
+          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
+        } else {
+          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashed)
         }
 
       } else if (src1(0)== overlap(0)){
-        // Missing from src2, so add that to mashup
-        //println("Missing src2 " + src2(0))
+        // so element missing from src2, add that to mashup
+        val mashed = mashup += src2(0)
         if (overlap.size == 1) {
-          val mashed = mashup += src2(0)
           mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
         } else {
-          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src2(0))
+          insertSingles(src1, src2.drop(1),overlap, mashed)
         }
 
       } else {
-        // then src2 *must* match, so add from src1
-        //println("Missing src1 " + src1(0))
+        // then missing src1, so add it to mashup
+        val mashed = mashup += src1(0)
         if (overlap.size == 1) {
-          val mashed = mashup += src1(0)
           mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
         } else {
-          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src1(0))
+          insertSingles(src1.drop(1), src2,overlap, mashed)
         }
       }
     }
@@ -123,19 +122,18 @@ import scala.annotation.tailrec
   *
   * @param i Index of row to print out.
   */
-  def printRow(i: Integer) = {
+  def printRow(i: Integer): Unit = {
     print(v1(i) + "=>")
     for (j <- 0 to v2.size - 1) {
      print (v2(j) + ":" + memo(i)(j) + ", ")
     }
-
     println(memo(i)(v2.size))
   }
 
   /** Print to stdout a display of the memoizing array.
   * Useful for teaching and explaining how the LCS algorithm works.
   */
-  def printMemo = {
+  def printMemo: Unit = {
     for (i <- 0 to v1.size - 1) {
       printRow(i)
     }
