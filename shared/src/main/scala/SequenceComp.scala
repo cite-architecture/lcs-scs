@@ -2,7 +2,7 @@ package edu.holycross.shot.seqcomp
 import scala.scalajs.js
 import js.annotation.JSExport
 import scala.collection.mutable.ArrayBuffer
-
+import scala.annotation.tailrec
 
 /** A class for comparing pairs of vectors.
 *
@@ -11,9 +11,8 @@ import scala.collection.mutable.ArrayBuffer
 */
 @JSExport class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
 
-
-  /** Compares each pair of elements in the two Vectors
-  * and saves the resulting counts of the lenght of common Vectors in a memoizing array.
+  /** Create a memoizing array by comparing each pair of elements in [[v1]] and [[v2]]
+  * and saving the resulting counts of the length of the common Vector (or lcs) at that point.
   */
   def memo = {
     val memoized = Array.ofDim[Int](v1.size + 1, v2.size + 1)
@@ -57,82 +56,74 @@ import scala.collection.mutable.ArrayBuffer
     common.toVector
   }
 
-  // tag for tail recursion
-  def  insertT(src1: Vector[T], src2: Vector[T],overlap: Vector[T], mashup: ArrayBuffer[T]) : Vector[T] = {
-    println(s"""INSERTING: ${src1}, ${src2}, ${overlap}, ${mashup}""")
+
+  /** Recursively insert unique elements from a pair of vectors into a vector of their
+  * common or overlapping elements.  This is equivalent to solving the SCS problem for
+  * a pair of Vectors by inserting elements into the LCS solution for same Vectors.
+  * Initial elements of the source vectors and the common vector are compared to decide
+  * whether or what to add to the composite mashup, then the process is repeated recursively
+  * until no elements remain in the overlap vector.  Finally, any remaining elements in `src1` and `src2`
+  * are added to the mashup with the convention that `src1` precedes `src2`.  This means
+  * that reversing the order of `src1` and `src2` might or might not produce
+  * identical results.
+  *
+  * @param src1 First vector to examine.
+  * @param src2 Second vector to examine.
+  * @param overlap Common vector (LCS of src1 and src2).
+  * @param mashup Accumulator with previously inserted elements.
+  */
+  @tailrec final def  insertSingles(src1: Vector[T], src2: Vector[T],overlap: Vector[T], mashup: ArrayBuffer[T]) : Vector[T] = {
     if (overlap.size == 0){
-      mashup.toVector  ++ src1 ++ src2
+      mashup.toVector ++ src1 ++ src2
+      
     } else {
-      if ((src1(0) == overlap(0)) && (src2(0) == overlap(0))) { // common
-        println("COMMON: keep " + overlap(0))
+      if ((src1(0) == overlap(0)) && (src2(0) == overlap(0))) {
+        // common to both.  Remove first element from all vectors.
+        //println("Common to both")
         if (overlap.size == 1) {
           val mashed = mashup += overlap(0)
           mashed.toVector  ++ src1.drop(1) ++ src2.drop(1)
         }  else {
-          insertT(src1.drop(1), src2.drop(1),overlap.drop(1), mashup)
+          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup)
         }
+
       } else if (src1(0)== overlap(0)){
-        println("V1 matches: ADD " + src2(0))
+        // Missing from src2, so add that to mashup
+        //println("Missing src2 " + src2(0))
         if (overlap.size == 1) {
-          mashup.toVector ++ src1.drop(1) ++ src2.drop(1)
+          val mashed = mashup += src2(0)
+          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
         } else {
-          insertT(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src2(0))
+          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src2(0))
         }
-      } else { //} if (src2(0) == overlap(0)){
-        println("V2 matches: ADD " + src1(0))
-        if (overlap.size == 1) {
-          mashup.toVector ++ src1.drop(1) ++ src2.drop(1)
-        } else {
-          insertT(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src1(0))
-        }
-      }
-      /* else {
-        println("NEITHER matches??, aod add: " + src1(0) + " and " + src2(0))
 
-        insertT(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src1(0) += src2(0))
-      }*/
-    }
-    //mashup.toVector ++ src1 ++ src2
-  }
-
-  def  scs: Vector[T] = {
-    println(s"""Create scs by inserting from ${v1}, ${v2} into ${lcs}""")
-
-    insertT(v1,v2, lcs,ArrayBuffer[T]())
-    //val shortest = lcs
-    /*
-    var common = ArrayBuffer[T]()
-    var i1 = 0
-    var i2 = 0
-    while ((i1 < v1.size) && (i2 < v2.size)) {
-      println(s"""Cf ${v1(i1)} at ${i1}, ${v2(i2)} at ${i2}""" )
-      if (v1(i1) == v2(i2)) {
-        common  += v1(i1)
-        println("Add match to common " + common)
-        i1 = i1 + 1
-        i2 = i2 + 1
       } else {
-        if(memo(i1 + 1)(i2) >= memo(i1)(i2 + 1)) {
-          common += v1(i1)
-          i1 = i1 + 1
-
-          println("Advance row to common " + common)
-
+        // then src2 *must* match, so add from src1
+        //println("Missing src1 " + src1(0))
+        if (overlap.size == 1) {
+          val mashed = mashup += src1(0)
+          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
         } else {
-          common += v2(i2)
-          i2 = i2 + 1
-
-          println("Advance col to common " + common)
-
+          insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashup += src1(0))
         }
       }
     }
-    common.toVector*/
   }
 
+  /** Compute Shortest Common Supersequence for [[v1]] and [[v2]] by
+  * finding LCS and inserting into it at the approrpiate point accompanying
+  * any elements of [[v1]] and [[v2]] that appear only in one Vector.
+  */
+  def  scs: Vector[T] = {
+    insertSingles(v1,v2, lcs,ArrayBuffer[T]())
+  }
 
-
-  def seeRow(i: Integer) = {
+  /** Print to stdout a display of a specified row
+  * of the memoizing array.  Used by [[printMemo]].
+  *
+  * @param i Index of row to print out.
+  */
+  def printRow(i: Integer) = {
     print(v1(i) + "=>")
     for (j <- 0 to v2.size - 1) {
      print (v2(j) + ":" + memo(i)(j) + ", ")
@@ -140,9 +131,13 @@ import scala.collection.mutable.ArrayBuffer
 
     println(memo(i)(v2.size))
   }
-  def seeMemo = {
+
+  /** Print to stdout a display of the memoizing array.
+  * Useful for teaching and explaining how the LCS algorithm works.
+  */
+  def printMemo = {
     for (i <- 0 to v1.size - 1) {
-      seeRow(i)
+      printRow(i)
     }
     print(" =>")
     for (j <- 0 to v2.size - 1) { print(" :" + memo(v1.size)(j) + ", ") }
@@ -150,9 +145,6 @@ import scala.collection.mutable.ArrayBuffer
   }
 
 }
-
-
-
 
 
 
