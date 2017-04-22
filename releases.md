@@ -1,3 +1,4 @@
 # Release notes
 
-No public releases yet.
+
+**1.0**: initial release implementing LCS and SCS for two vectors of parameterized type.
