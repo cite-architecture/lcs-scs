@@ -39,3 +39,9 @@ import scala.collection.mutable.ArrayBuffer
     common.toVector
   }
 }
+
+object SequenceComp {
+  def apply[T ](v1: Vector[T],  v2: Vector[T] ) = {
+    new SequenceComp(v1, v2)
+  }
+}
