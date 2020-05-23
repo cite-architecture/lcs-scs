@@ -57,6 +57,16 @@ import scala.annotation.tailrec
   }
 
 
+
+
+  /** Compute Shortest Common Supersequence for [[v1]] and [[v2]] by
+  * finding LCS and inserting into it at the approrpiate point accompanying
+  * any elements of [[v1]] and [[v2]] that appear only in one Vector.
+  */
+  def  scs: Vector[T] = {
+    insertSingles(v1,v2, lcs,Vector.empty[T])
+  }
+
   /** Recursively insert unique elements from a pair of vectors into a vector of their
   * common or overlapping elements.  This is equivalent to solving the SCS problem for
   * a pair of Vectors by inserting elements into the LCS solution for same Vectors.
@@ -72,48 +82,98 @@ import scala.annotation.tailrec
   * @param overlap Common vector (LCS of src1 and src2).
   * @param mashup Accumulator with previously inserted elements.
   */
-  @tailrec final def  insertSingles(src1: Vector[T], src2: Vector[T], overlap: Vector[T], mashup: ArrayBuffer[T]) : Vector[T] = {
-    if (overlap.size == 0){
-      mashup.toVector ++ src1 ++ src2
+  @tailrec final def  insertSingles(src1: Vector[T], src2: Vector[T], overlap: Vector[T], mashup: Vector[T]) : Vector[T] = {
+    if (overlap.isEmpty){
+      mashup ++ src1 ++ src2
 
     } else {
-      if ((src1(0) == overlap(0)) && (src2(0) == overlap(0))) {
+      if ((src1.head == overlap.head) && (src2.head == overlap.head)) {
         // common to both. Add first element to mashup, and
         // remove first element from all vectors.
-        val mashed = mashup += overlap(0)
+        val mashed = mashup :+ overlap.head
         if (overlap.size == 1) {
-          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
+          mashed.toVector ++ src1.tail ++ src2.tail
         } else {
           insertSingles(src1.drop(1), src2.drop(1),overlap.drop(1), mashed)
         }
 
-      } else if (src1(0)== overlap(0)){
+      } else if (src1.head == overlap.head) {
         // so element missing from src2, add that to mashup
-        val mashed = mashup += src2(0)
+        val mashed = mashup :+ src2.head
         if (overlap.size == 1) {
-          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
+          mashed.toVector ++ src1.tail ++ src2.tail
         } else {
-          insertSingles(src1, src2.drop(1),overlap, mashed)
+          insertSingles(src1, src2.tail, overlap, mashed)
         }
 
       } else {
         // then missing src1, so add it to mashup
-        val mashed = mashup += src1(0)
+        val mashed = mashup :+ src1.head
         if (overlap.size == 1) {
-          mashed.toVector ++ src1.drop(1) ++ src2.drop(1)
+          mashed.toVector ++ src1.tail ++ src2.tail
         } else {
-          insertSingles(src1.drop(1), src2,overlap, mashed)
+          insertSingles(src1.tail, src2, overlap, mashed)
         }
       }
     }
   }
 
-  /** Compute Shortest Common Supersequence for [[v1]] and [[v2]] by
-  * finding LCS and inserting into it at the approrpiate point accompanying
-  * any elements of [[v1]] and [[v2]] that appear only in one Vector.
-  */
-  def  scs: Vector[T] = {
-    insertSingles(v1,v2, lcs,ArrayBuffer[T]())
+
+  def align: Vector[ Pairing[T] ] = {
+    //println("LEFT SRC " + v1)
+    //println("RIGHT SRC " + v2)
+    align(v1, v2, scs, Vector.empty[Pairing[T]])
+  }
+
+  @tailrec final def align(
+
+    src1: Vector[T],
+    src2: Vector[T],
+    overlap: Vector[T],
+    mashup: Vector[ Pairing[T] ]
+  ) : Vector[ Pairing[T] ] = {
+    if (overlap.isEmpty){
+      mashup
+
+    } else if (src1.isEmpty) {
+      // add rest of right
+      val additions = src2.map( t => Pairing(None, Some(t)))
+      mashup ++ additions
+
+    } else if (src2.isEmpty) {
+      // add rest of left
+      val additions = src2.map( t => Pairing(Some(t), None))
+      mashup ++ additions
+
+    } else {
+      if ((src1.head == overlap.head) && (src2.head == overlap.head)) {
+        // common to both.
+        //println("SHARED " + overlap.head)
+        val pairing = Pairing(Some(overlap.head), Some(overlap.head))
+        val mashed = mashup :+ pairing
+        val left = if (src1.isEmpty) { src1 } else {src1.tail}
+        val right = if (src2.isEmpty) { src2 } else {src2.tail}
+        align(left, right, overlap.tail, mashed)
+
+
+      } else if (src1.head == overlap.head) {
+        // so element missing from src2
+        //println("LEFT, NOT RIGHT " + overlap.head)
+        val pairing = Pairing(Some(overlap.head), None)
+        val mashed = mashup :+ pairing
+        val left = if (src1.isEmpty) { src1 } else {src1.tail}
+
+        align(left, src2, overlap.tail, mashed)
+
+      } else {
+        // then missing from src1
+        //println("RIGHT, NOT LEF " + overlap.head)
+        val pairing = Pairing( None, Some(overlap.head))
+        val right = if (src2.isEmpty) { src2 } else {src2.tail}
+        val mashed = mashup :+ pairing
+        align(src1, right, overlap.tail, mashed)
+      }
+    }
   }
 
   /** Print to stdout a display of a specified row
