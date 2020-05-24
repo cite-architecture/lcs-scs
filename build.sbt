@@ -1,6 +1,6 @@
 name := "Cross-compiled library for sequence comparison"
 
-crossScalaVersions := Seq("2.10.6","2.11.8", "2.12.1")
+crossScalaVersions := Seq("2.10.6","2.11.8", "2.12.4")
 
 
 lazy val root = project.in(file(".")).
@@ -15,7 +15,7 @@ lazy val crossed = crossProject.in(file(".")).
     settings(
       name := "seqcomp",
       organization := "edu.holycross.shot",
-      version := "1.1.0",
+      version := "1.2.0",
       licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
       libraryDependencies ++= Seq(
         "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",

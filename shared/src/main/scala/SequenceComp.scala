@@ -11,8 +11,9 @@ import scala.annotation.tailrec
 */
 @JSExport class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
 
-  /** Create a memoizing array by comparing each pair of elements in [[v1]] and [[v2]]
-  * and saving the resulting counts of the length of the common Vector (or lcs) at that point.
+  /** Create a memoizing array by comparing each pair of elements
+  * in [[v1]] and [[v2]]  and saving the resulting counts of
+  * the length of the common Vector (or lcs) at that point.
   */
   def memo: Array[Array[Int]] = {
     val memoized = Array.ofDim[Int](v1.size + 1, v2.size + 1)
@@ -120,13 +121,10 @@ import scala.annotation.tailrec
 
 
   def align: Vector[ Pairing[T] ] = {
-    //println("LEFT SRC " + v1)
-    //println("RIGHT SRC " + v2)
     align(v1, v2, scs, Vector.empty[Pairing[T]])
   }
 
   @tailrec final def align(
-
     src1: Vector[T],
     src2: Vector[T],
     overlap: Vector[T],
@@ -148,7 +146,6 @@ import scala.annotation.tailrec
     } else {
       if ((src1.head == overlap.head) && (src2.head == overlap.head)) {
         // common to both.
-        //println("SHARED " + overlap.head)
         val pairing = Pairing(Some(overlap.head), Some(overlap.head))
         val mashed = mashup :+ pairing
         val left = if (src1.isEmpty) { src1 } else {src1.tail}
@@ -204,7 +201,6 @@ import scala.annotation.tailrec
 }
 
 
-
 /** Factory for making [[SequenceComp]] objects directly from
 * pairs of Vectors.
 */
@@ -219,4 +215,50 @@ object SequenceComp {
     new SequenceComp(v1, v2)
   }
 
+
+  /** Create matrix of relations for each item in multiple
+  * lists of objects of parameterized type.
+  *
+  * @param scs
+  * @param tokens
+  * @param emptyValue
+  * @param compiled
+  */
+  def matrix[T](
+    supersequence: Vector[T],
+    tokens: Vector[Vector[T]],
+    emptyValue: String = "",
+    compiled: Vector[String] = Vector.empty[String]
+  ) : Vector[String] = {
+    if (tokens.isEmpty) {
+      compiled
+
+    } else if (compiled.isEmpty) {
+      matrix(supersequence, tokens, emptyValue, supersequence.map(_.toString))
+
+    } else {
+      val pairing = SequenceComp(supersequence, tokens.head).align
+      val zipped = compiled.zip(pairing.map(_.right.getOrElse(emptyValue)))
+      val newComposite = zipped.map{ pr => pr._1 + "#" + pr._2 }
+
+      matrix(supersequence,  tokens.tail, emptyValue, newComposite)
+    }
+  }
+
+
+  /** Compute shortest common supersequence for multiple
+  * Vectors of objects of parameterized type.
+  *
+  *  @param v Multiple Vectors of objects of type T.
+  * @param res Resulting shortest common supersequence.
+  */
+  def scs[T](v: Vector[Vector[String]],
+    res: Vector[String] = Vector.empty[String] ) : Vector[String] = {
+      if (v.isEmpty) {
+        res
+      } else {
+        val currScs = SequenceComp(v.head, res).scs
+        scs(v.tail, currScs)
+      }
+    }
 }
