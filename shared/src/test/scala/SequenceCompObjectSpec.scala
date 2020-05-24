@@ -10,14 +10,7 @@ class SequenceCompObjectSpec extends FlatSpec {
   val b = Vector("b","c","d", "e")
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
-
-  /* val cex = Vector(
-    "a#a##a",
-    "b#b#b#",
-    "c#c#c#c",
-    "d#d#d#",
-    "e##e#e")
-    */
+  val labels = Vector("long", "short", "spotty")
 
   "The SequenceComp object" should "compute shortest common supersequence (SCS) for a Vector of Vectors" in {
     val expected = Vector("a", "b", "c", "d", "e", "f", "g")
@@ -60,6 +53,17 @@ class SequenceCompObjectSpec extends FlatSpec {
     println(SequenceComp.matrixString(m))
   }
 
+  it should "support adding labels to string output" in {
+    val m = SequenceComp.matrix( many)
+    println("Labelled:")
+    println(SequenceComp.matrixString(m, labels = labels, featureSeparator = " | "))
+
+    val rotated =  SequenceComp.matrix( many, vectorsByRow = false)
+    println("Rotated:")
+    println(rotated)
+    //println(SequenceComp.matrixString(rotated, labels = labels, featureSeparator = " | "))
+
+  }
 
 
 }

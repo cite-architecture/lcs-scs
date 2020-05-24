@@ -1,5 +1,7 @@
 # Release notes
 
+**1.4.0**: support labelling rows in string output
+
 **1.3.0**: adds transposition and pretty printint of matrices.
 
 **1.2.0**: adds `scs` and `matrix` methods on `SequenceComp` object.

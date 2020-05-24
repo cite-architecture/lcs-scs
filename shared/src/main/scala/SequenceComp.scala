@@ -216,38 +216,27 @@ object SequenceComp {
   }
 
 
-  /** Create matrix of relations for each item in multiple
-  * lists of objects of parameterized type.
-  *
-  * @param scs
-  * @param tokens
-  * @param emptyValue
-  * @param compiled
+  def matrixString[T](m:  Vector[Vector[Option[T]]],
+    emptyValue: String = "-",
+    featureSeparator: String = " ",
+    labels: Vector[String] = Vector.empty[String] //,
+    //columnLabels: Vector[String] = Vector.empty[String]
+  ) : String = {
 
-  def matrixStr[T](
-    supersequence: Vector[T],
-    tokens: Vector[Vector[T]],
-    emptyValue: String = "",
-    compiled: Vector[String] = Vector.empty[String]
-  ) : Vector[String] = {
-    if (tokens.isEmpty) {
-      compiled
 
-    } else if (compiled.isEmpty) {
-      matrix(supersequence, tokens, emptyValue, supersequence.map(_.toString))
+    if (labels.isEmpty) {
+      // compose unlabelled string:
+      val stringVects = m.map(r => r.map(c => c.getOrElse(emptyValue)))
+      stringVects.map(_.mkString(featureSeparator)).mkString("\n")
 
     } else {
-      val pairing = SequenceComp(supersequence, tokens.head).align
-      val zipped = compiled.zip(pairing.map(_.right.getOrElse(emptyValue)))
-      val newComposite = zipped.map{ pr => pr._1 + "#" + pr._2 }
+      require(m.map(_.size).distinct.size == 1, "Matrix string can only be composed for square matrices")
+      require(labels.size == m.size - 1, "Number of labels must equal primary dimension of matrix.")
+      val fullLabels = "Composite SCS" +: labels
+      val labelled = m.zipWithIndex.map{ case (v, i ) => fullLabels(i) +: v.map(_.getOrElse(emptyValue)) }
+      labelled.map(_.mkString(featureSeparator)).mkString("\n")
 
-      matrix(supersequence,  tokens.tail, emptyValue, newComposite)
     }
-  }*/
-
-  def matrixString[T](m:  Vector[Vector[Option[T]]], emptyValue: String = "-", featureSeparator: String = " ") : String = {
-    val stringVects = m.map(r => r.map(c => c.getOrElse(emptyValue)))
-    stringVects.map(_.mkString(featureSeparator)).mkString("\n")
   }
 
   def transpose[T](matrix: Vector[Vector[Option[T]]]): Vector[Vector[Option[T]]] = {
