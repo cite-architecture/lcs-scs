@@ -223,8 +223,8 @@ object SequenceComp {
   * @param tokens
   * @param emptyValue
   * @param compiled
-  */
-  def matrix[T](
+
+  def matrixStr[T](
     supersequence: Vector[T],
     tokens: Vector[Vector[T]],
     emptyValue: String = "",
@@ -243,6 +243,50 @@ object SequenceComp {
 
       matrix(supersequence,  tokens.tail, emptyValue, newComposite)
     }
+  }*/
+
+  def matrixString[T](m:  Vector[Vector[Option[T]]], emptyValue: String = "-", featureSeparator: String = " ") : String = {
+    val stringVects = m.map(r => r.map(c => c.getOrElse(emptyValue)))
+    stringVects.map(_.mkString(featureSeparator)).mkString("\n")
+  }
+
+  def transpose[T](matrix: Vector[Vector[Option[T]]]): Vector[Vector[Option[T]]] = {
+    matrix.head.indices.map(i => matrix.map(_(i))).toVector
+  }
+
+  def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): Vector[Vector[Option[T]]] = {
+    val superseq =  SequenceComp.scs(features)
+    matrix(superseq, features, vectorsByRow, Vector(superseq.map(Some(_))))
+  }
+
+  def matrix[T](
+    supersequence: Vector[T],
+    tokens: Vector[Vector[T]],
+    vectorsByRow: Boolean,
+    compiled: Vector[Vector[Option[T]]] // = Vector.empty[Vector[Option[T]]]
+  ) : Vector[Vector[Option[T]]] = {
+    if (tokens.isEmpty) {
+      if (vectorsByRow) {
+        compiled
+      } else {
+        transpose(compiled)
+      }
+
+    } else {
+      val pairing  = SequenceComp(supersequence, tokens.head).align
+      val rightValues : Vector[Option[T]] =  pairing.map(_.right)
+      val newColumn = if (rightValues.size  < supersequence.size) {
+        val diff = supersequence.size - rightValues.size
+        val addedNulls = for (i <- 1 to diff) yield { None }
+        rightValues ++ addedNulls.toVector
+
+      } else {
+        rightValues
+      }
+      val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
+
+      matrix(supersequence,  tokens.tail, vectorsByRow, newComposite)
+    }
   }
 
 
@@ -252,8 +296,8 @@ object SequenceComp {
   *  @param v Multiple Vectors of objects of type T.
   * @param res Resulting shortest common supersequence.
   */
-  def scs[T](v: Vector[Vector[String]],
-    res: Vector[String] = Vector.empty[String] ) : Vector[String] = {
+  def scs[T](v: Vector[Vector[T]],
+    res: Vector[T] = Vector.empty[T] ) : Vector[T] = {
       if (v.isEmpty) {
         res
       } else {
