@@ -1,6 +1,7 @@
 package edu.holycross.shot.seqcomp
 import scala.scalajs.js
-import js.annotation.JSExport
+
+import scala.scalajs.js.annotation._
 
 import scala.annotation.tailrec
 
@@ -9,5 +10,6 @@ import scala.annotation.tailrec
 * @param features Matrix of related features, as
 * Scala Options.
 */
-@JSExport class FeatureMatrix[T] (features: Vector[Vector[Option[T]]])  {
+@JSExportTopLevel("FeatureMatrix")
+case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]])  {
 }

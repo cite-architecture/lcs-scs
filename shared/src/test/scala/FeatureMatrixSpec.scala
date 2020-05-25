@@ -4,36 +4,23 @@ package edu.holycross.shot.seqcomp
 
 import org.scalatest.FlatSpec
 
-class SequenceCompObjectSpec extends FlatSpec {
+class FeatureMatrixSpec extends FlatSpec {
 
   val a = Vector("a","b","c","d","f", "g")
   val b = Vector("b","c","d", "e")
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
   val labels = Vector("long", "short", "spotty")
+  val matrix =  SequenceComp.matrix( many)
 
-  "The SequenceComp object" should "compute shortest common supersequence (SCS) for a Vector of Vectors" in  {
-    val expected = Vector("a", "b", "c", "d", "e", "f", "g")
-    assert(SequenceComp.scs(many) == expected)
-  }
+  "A FeatureMatrix" should "do things" in pending
 
-  it should "tabulate a matrix of relations among objects for multiple lists of type-parameterized objects" in {
 
-    val reslt = SequenceComp.matrix( many)
-    reslt match {
-      case m : FeatureMatrix[String] => assert(true)
-      case _ => {
-        println("Something went wrong with this matrix: failed to create FeatureMatrix")
-      }
-    }
-  }
+  it should "count rows" in pending
+  it should "count columns" in pending
+  it should "create a new matrix by transposition" in pending
 
-  it should "ensure that the matrix is square" in pending /* {
-    val expectedSize = SequenceComp.scs(many).size
-    val reslt = SequenceComp.matrix(many)
-    assert(reslt.map(_.size).distinct(0) == expectedSize)
-  }
-*/
+  it should "ensure that the matrix is fully populated by Options" in pending
 
 
   it should "print formatted strings" in pending /*{

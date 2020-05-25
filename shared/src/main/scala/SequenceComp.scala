@@ -1,6 +1,6 @@
 package edu.holycross.shot.seqcomp
 import scala.scalajs.js
-import js.annotation.JSExport
+import scala.scalajs.js.annotation._
 import scala.collection.mutable.ArrayBuffer
 import scala.annotation.tailrec
 
@@ -9,7 +9,8 @@ import scala.annotation.tailrec
 * @param v1 First Vector to compare.
 * @param v2 Second Vector to compare.
 */
-@JSExport class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
+@JSExportTopLevel("SequenceComp")
+case class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
 
   /** Create a memoizing array by comparing each pair of elements
   * in [[v1]] and [[v2]]  and saving the resulting counts of
@@ -243,7 +244,7 @@ object SequenceComp {
     matrix.head.indices.map(i => matrix.map(_(i))).toVector
   }
 
-  def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): Vector[Vector[Option[T]]] = {
+  def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): FeatureMatrix[T] = {
     val superseq =  SequenceComp.scs(features)
     matrix(superseq, features, vectorsByRow, Vector(superseq.map(Some(_))))
   }
@@ -253,12 +254,12 @@ object SequenceComp {
     tokens: Vector[Vector[T]],
     vectorsByRow: Boolean,
     compiled: Vector[Vector[Option[T]]] // = Vector.empty[Vector[Option[T]]]
-  ) : Vector[Vector[Option[T]]] = {
+  ) : FeatureMatrix[T] = {
     if (tokens.isEmpty) {
       if (vectorsByRow) {
-        compiled
+        FeatureMatrix(compiled)
       } else {
-        transpose(compiled)
+        FeatureMatrix(transpose(compiled))
       }
 
     } else {
