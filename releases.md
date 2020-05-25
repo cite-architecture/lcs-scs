@@ -1,5 +1,7 @@
 # Release notes
 
+**2.0.0**: adds the `FeatureMatrix` class.
+
 **1.4.0**: support labelling rows in string output
 
 **1.3.0**: adds transposition and pretty printint of matrices.

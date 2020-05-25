@@ -121,10 +121,20 @@ case class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
   }
 
 
+  /** Align vectors against their supersequence.
+  */
   def align: Vector[ Pairing[T] ] = {
     align(v1, v2, scs, Vector.empty[Pairing[T]])
   }
 
+  /** Recursively align two vectors against their supersequence.
+  *
+  * @param src1 First Vector to align.
+  * @param src2 Second Vector to align.
+  * @param overlap The Shortest Common Supersequence of
+  * src1 and src2.
+  * @param mashup The cumulative alignment.
+  */
   @tailrec final def align(
     src1: Vector[T],
     src2: Vector[T],
@@ -217,29 +227,7 @@ object SequenceComp {
   }
 
 
-  def matrixString[T](m:  Vector[Vector[Option[T]]],
-    emptyValue: String = "-",
-    featureSeparator: String = " ",
-    labels: Vector[String] = Vector.empty[String] //,
-    //columnLabels: Vector[String] = Vector.empty[String]
-  ) : String = {
-
-
-    if (labels.isEmpty) {
-      // compose unlabelled string:
-      val stringVects = m.map(r => r.map(c => c.getOrElse(emptyValue)))
-      stringVects.map(_.mkString(featureSeparator)).mkString("\n")
-
-    } else {
-      require(m.map(_.size).distinct.size == 1, "Matrix string can only be composed for square matrices")
-      require(labels.size == m.size - 1, "Number of labels must equal primary dimension of matrix.")
-      val fullLabels = "Composite SCS" +: labels
-      val labelled = m.zipWithIndex.map{ case (v, i ) => fullLabels(i) +: v.map(_.getOrElse(emptyValue)) }
-      labelled.map(_.mkString(featureSeparator)).mkString("\n")
-
-    }
-  }
-
+  /** Tabulate a matrix of features
 
   def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): FeatureMatrix[T] = {
     val superseq =  SequenceComp.scs(features)
@@ -275,7 +263,7 @@ object SequenceComp {
       matrix(supersequence,  tokens.tail, vectorsByRow, newComposite)
     }
   }
-
+  */
 
   /** Compute shortest common supersequence for multiple
   * Vectors of objects of parameterized type.

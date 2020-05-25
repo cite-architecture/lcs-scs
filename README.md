@@ -4,7 +4,7 @@
 
 `lcs-scs` is a cross-platform library for comparing Vectors.
 
-## Current version: 1.4.0
+## Current version: 2.0.0
 
 Status: active development. [Release notes](releases.md).
 

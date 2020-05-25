@@ -1,8 +1,9 @@
 package edu.holycross.shot.seqcomp
+
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.collection.mutable.ArrayBuffer
-import scala.annotation.tailrec
+//import scala.collection.mutable.ArrayBuffer
+//import scala.annotation.tailrec
 
 
 // Should ensure that at leats one of left, right is not None
