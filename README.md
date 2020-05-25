@@ -2,7 +2,7 @@
 
 ## What it is
 
-`lcs-scs` is a cross-platform library for comparing Vectors.
+`lcs-scs` is a cross-platform library for comparing Vectors of data with any type of contents.
 
 ## Current version: 2.0.0
 
@@ -14,7 +14,7 @@ Status: active development. [Release notes](releases.md).
 
 ## Using, building, testing
 
-`lcs-scs` is compiled for both the JVM and ScalaJS using scala 2.10, 2.11 and 2.12.
+`lcs-scs` is compiled for both the JVM and ScalaJS using 2.12.
 
 To build from source and test for a given version, use normal sbt commands (`compile`, `test` ...).
 
