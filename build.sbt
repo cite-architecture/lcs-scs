@@ -17,9 +17,8 @@ lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
       version := "1.4.0",
       licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
       libraryDependencies ++= Seq(
-        //"org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",
-
-        "org.scalatest" %%% "scalatest" % "3.1.2" % "test"
+        "org.scalatest" %%% "scalatest" % "3.1.2" % "test",
+        "org.wvlet.airframe" %% "airframe-log" % "20.5.2"
 
       )
     ).
@@ -35,3 +34,8 @@ lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
 
 lazy val crossedJVM = crossed.jvm
 lazy val crossedJS = crossed.js.enablePlugins(ScalaJSPlugin)
+
+lazy val docs = project       // new documentation project
+  .in(file("guide")) // important: it must not be docs/
+  .dependsOn(crossedJVM)
+  .enablePlugins(MdocPlugin)

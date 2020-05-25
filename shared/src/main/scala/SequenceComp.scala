@@ -240,9 +240,6 @@ object SequenceComp {
     }
   }
 
-  def transpose[T](matrix: Vector[Vector[Option[T]]]): Vector[Vector[Option[T]]] = {
-    matrix.head.indices.map(i => matrix.map(_(i))).toVector
-  }
 
   def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): FeatureMatrix[T] = {
     val superseq =  SequenceComp.scs(features)
@@ -259,7 +256,7 @@ object SequenceComp {
       if (vectorsByRow) {
         FeatureMatrix(compiled)
       } else {
-        FeatureMatrix(transpose(compiled))
+        FeatureMatrix(compiled).transpose
       }
 
     } else {

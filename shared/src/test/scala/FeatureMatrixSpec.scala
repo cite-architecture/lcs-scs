@@ -10,28 +10,41 @@ class FeatureMatrixSpec extends FlatSpec {
   val b = Vector("b","c","d", "e")
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
-  val labels = Vector("long", "short", "spotty")
+  val labels = Vector("SCS", "long", "short", "spotty")
   val matrix =  SequenceComp.matrix( many)
 
-  "A FeatureMatrix" should "do things" in pending
+  "A FeatureMatrix" should "do things" in {
+    println(matrix.features.mkString("\n"))
+    //println(matrix.features.size)
+  }
 
 
-  it should "count rows" in pending
-  it should "count columns" in pending
+  it should "count rows" in {
+    // 3 rows of source data plus automatically built SCS
+    val expectedRows = 4
+    assert(matrix.rows == expectedRows)
+  }
+
+  it should "count columns" in {
+    // a - g
+    val expectedColumns = 7
+    assert(matrix.columns == expectedColumns)
+  }
+
   it should "create a new matrix by transposition" in pending
 
   it should "ensure that the matrix is fully populated by Options" in pending
 
 
-  it should "print formatted strings" in pending /*{
-    val m = SequenceComp.matrix( many)
+  it should "print formatted strings" in {
+
 
     val expected = "a b c d e f g\na b c d - f g\n- b c d e - -\na - c - e f g"
-    assert(SequenceComp.matrixString(m) == expected)
+    //assert(SequenceComp.matrixString(m) == expected)
     println("Vector by row (default):")
-    println(SequenceComp.matrixString(m))
+    println(matrix.prettyPrint(rowLabels = labels))
   }
-*/
+
   it should "be able to transpose a matrix to organize by column" in pending /* {
     val m = SequenceComp.matrix( many, vectorsByRow = false)
     println("Vector by column:")
