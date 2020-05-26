@@ -36,6 +36,10 @@ lazy val crossedJVM = crossed.jvm
 lazy val crossedJS = crossed.js.enablePlugins(ScalaJSPlugin)
 
 lazy val docs = project       // new documentation project
-  .in(file("guide")) // important: it must not be docs/
+  .in(file("docs-build")) // important: it must not be docs/
   .dependsOn(crossedJVM)
   .enablePlugins(MdocPlugin)
+  .settings(
+    mdocIn := file("guide"),
+    mdocOut := file("mdocs")
+  )
