@@ -226,45 +226,6 @@ object SequenceComp {
     new SequenceComp(v1, v2)
   }
 
-
-  /** Tabulate a matrix of features
-
-  def matrix[T](features: Vector[Vector[T]], vectorsByRow: Boolean = true): FeatureMatrix[T] = {
-    val superseq =  SequenceComp.scs(features)
-    matrix(superseq, features, vectorsByRow, Vector(superseq.map(Some(_))))
-  }
-
-  def matrix[T](
-    supersequence: Vector[T],
-    tokens: Vector[Vector[T]],
-    vectorsByRow: Boolean,
-    compiled: Vector[Vector[Option[T]]] // = Vector.empty[Vector[Option[T]]]
-  ) : FeatureMatrix[T] = {
-    if (tokens.isEmpty) {
-      if (vectorsByRow) {
-        FeatureMatrix(compiled)
-      } else {
-        FeatureMatrix(compiled).transpose
-      }
-
-    } else {
-      val pairing  = SequenceComp(supersequence, tokens.head).align
-      val rightValues : Vector[Option[T]] =  pairing.map(_.right)
-      val newColumn = if (rightValues.size  < supersequence.size) {
-        val diff = supersequence.size - rightValues.size
-        val addedNulls = for (i <- 1 to diff) yield { None }
-        rightValues ++ addedNulls.toVector
-
-      } else {
-        rightValues
-      }
-      val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
-
-      matrix(supersequence,  tokens.tail, vectorsByRow, newComposite)
-    }
-  }
-  */
-
   /** Compute shortest common supersequence for multiple
   * Vectors of objects of parameterized type.
   *

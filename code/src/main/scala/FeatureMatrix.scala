@@ -2,7 +2,6 @@ package edu.holycross.shot.seqcomp
 
 //import scala.scalajs.js
 import wvlet.log._
-
 // JVM only:
 import wvlet.log.LogFormatter.SourceCodeLogFormatter
 
@@ -15,7 +14,7 @@ import scala.annotation.tailrec
 * Scala Options.
 */
 //@JSExportTopLevel("FeatureMatrix")
-case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) { //extends LogSupport {
+case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSupport {
 
   val columnCounts: Vector[Int] = features.map(_.size)
   require(columnCounts.distinct.size == 1, "Unbalanced matrix: rows have different numbers of columns.")
@@ -31,6 +30,42 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) { //extends Lo
      val transposedFeatures = features.head.indices.map( idx => features.map(_(idx))).toVector
      FeatureMatrix(transposedFeatures)
   }
+
+  /** Retrieve value of matrix identified by
+  * row, column indices.
+  *
+  * @param r Row index.
+  * @param c Column index.
+  */
+  def cell(r: Int, c: Int): Option[T] = {
+    features(r)(c)
+  }
+
+  /** Retrieve value of matrix identified by
+  * CellIndex object.
+  *
+  * @param idx Type-parameterized [[CellIndex]].
+  */
+  def cell(idx: CellIndex[T]): Option[T] = {
+    features(idx.r)(idx.c)
+  }
+
+
+
+
+
+/*
+  def labelRows(labels: Vector[String],
+  ): Vector[Vector[String]] = {
+    require(labels.size == columns, "Number of labels must equal number of columns.")
+    //val labelled =
+    //labelled
+    Vector[Vector.empty[String]]
+  }*/
+
+  /*def labelColumns(labels: Vector[String],
+  emptyValue: String = "-")
+*/
 
 
   /** Generate String view of matrix.
@@ -60,8 +95,8 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) { //extends Lo
 
 
       val withAllLabels = if (columnLabels.nonEmpty) {
-        require(columnLabels.size == columns, "Number of labels must equal number of columns.")
-        columnLabels +: withRowLabels
+        withRowLabels
+        //columnLabels +: withRowLabels
       } else {
         withRowLabels
       }
@@ -71,7 +106,7 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) { //extends Lo
 }
 
 
-object FeatureMatrix {
+object FeatureMatrix extends LogSupport {
 
     /** Tabulate a matrix of features from
     * multiple lists of data values.
@@ -83,10 +118,11 @@ object FeatureMatrix {
     */
     def apply[T](
       features: Vector[Vector[T]],
-      vectorsByRow: Boolean = true
+      vectorsByRow: Boolean = true,
+      includeScs: Boolean = false
     ): FeatureMatrix[T] = {
       val superseq =  SequenceComp.scs(features)
-      matrix(superseq, features, vectorsByRow, Vector(superseq.map(Some(_))))
+      matrix(superseq, features, vectorsByRow, includeScs, Vector(superseq.map(Some(_))))
     }
 
 
@@ -105,6 +141,7 @@ object FeatureMatrix {
       supersequence: Vector[T],
       features: Vector[Vector[T]],
       vectorsByRow: Boolean,
+      includeScs: Boolean = false,
       compiled: Vector[Vector[Option[T]]]
     ) : FeatureMatrix[T] = {
       if (features.isEmpty) {
@@ -127,8 +164,57 @@ object FeatureMatrix {
         }
         val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
 
-        matrix(supersequence,  features.tail, vectorsByRow, newComposite)
+        matrix(supersequence,  features.tail, vectorsByRow, includeScs, newComposite)
       }
     }
 
+
+  /** Compose a table of text values for a matrix of features.
+  *
+  * @param featureMatrix
+  * @param emptyValue
+  */
+  def stringTable(featureMatrix: Vector[Vector[Any]], emptyValue: String = "-") : Vector[Vector[String]] = {
+    featureMatrix.map (row => row.map( cell => {
+        cell match {
+          case s: String => s
+          case None => emptyValue
+          case Some(other) => other.toString
+        }
+      }
+    ))
+  }
+
+  /** Add column labels to a table of text strings.
+  *
+  * @param featureStrings Table of text strings.
+  * @param labels List of labels to apply.
+  */
+  def labelColumns(featureStrings: Vector[Vector[String]], labels: Vector[String]): Vector[Vector[String] ] = {
+    labels +: featureStrings
+  }
+
+  /** Add row labels to a table of text strings.
+  *
+  * @param featureStrings Table of text strings.
+  * @param labels List of labels to apply.
+  */
+  def labelRows(featureStrings: Vector[Vector[String]], labels: Vector[String]): Vector[Vector[String] ] = {
+    //require(rowLabels.size == rows, "Number of labels must equal number of rows.")
+    featureStrings.zipWithIndex.map { case (row, i ) => labels(i) +: row
+    }
+  }
+
+  /** Compose a delimited-text representation of a table of data options.
+  *
+  * @param featureMatrix Table of data options.
+  * @param emptyValue String to use for None values.
+  * @param separator String to use in separating columns of the
+  * delimited-text output.
+  */
+  def delimited(featureMatrix: Vector[Vector[Any]], emptyValue: String = "-", separator: String = "|"): String = {
+    //Logger.setDefaultLogLevel(LogLevel.DEBUG)
+    val rows = stringTable(featureMatrix, emptyValue)
+    rows.map(_.mkString(separator)).mkString("\n")
+  }
 }

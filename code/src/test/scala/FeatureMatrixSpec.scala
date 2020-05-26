@@ -40,13 +40,17 @@ class FeatureMatrixSpec extends FlatSpec {
     assert(rotated.columns == matrix.rows)
   }
 
-  it should "object if the matrix is not fully populated by Options" in pending
+  it should "support selecting value by r,c reference" in {
+    val expected = Some("a")
+    assert(matrix.cell(0,0) == expected)
+  }
 
-  it should "support selecting value by r,c reference" in pending
+  it should "select values by CellIndex" in {
+    val ci: CellIndex[String] = CellIndex(0,0)
+    val expected = Some("a")
+    assert(matrix.cell(ci) == expected)
+  }
 
-  it should "offer a method to label columns" in pending
-
-  it should "offer a method to label rows" in pending
 
   it should "create a list of indices for a given value" in pending
 

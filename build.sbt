@@ -3,15 +3,15 @@ name := "seqcomp library"
 //crossScalaVersions := Seq("2.12.4") //Seq("2.10.6","2.11.8", "2.12.4")
 
 val code = project.in(file("code")).settings(
-scalaVersion := "2.12.4",
-name := "seqcomp",
-organization := "edu.holycross.shot",
-version := "2.0.0",
-licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
-libraryDependencies ++= Seq(
-  "org.scalatest" %%% "scalatest" % "3.1.2" % "test",
-  "org.wvlet.airframe" %% "airframe-log" % "20.5.2"
-)
+  scalaVersion := "2.12.4",
+  name := "seqcomp",
+  organization := "edu.holycross.shot",
+  version := "2.0.0",
+  licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.1.2" % "test",
+    "org.wvlet.airframe" %% "airframe-log" % "20.5.2"
+  )
 )
 /*
 lazy val root = project.in(file(".")).
