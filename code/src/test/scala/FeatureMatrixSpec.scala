@@ -21,7 +21,6 @@ class FeatureMatrixSpec extends FlatSpec {
     }
   }
 
-
   it should "count rows" in {
     // 3 rows of source data plus automatically built SCS
     val expectedRows = 4
@@ -51,6 +50,11 @@ class FeatureMatrixSpec extends FlatSpec {
     assert(matrix.cell(ci) == expected)
   }
 
+  it should "format a delimited-text version of the table" in pending
+
+  it should "create a string table" in pending
+  it should "create a string table with rows labelled" in pending
+  it should "create a string table with columns labelled" in pending
 
   it should "create a list of indices for a given value" in pending
 

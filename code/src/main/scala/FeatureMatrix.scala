@@ -50,24 +50,30 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
     features(idx.r)(idx.c)
   }
 
+  /** Compose text table with rows labelled.
+  *
+  * @param labels List of labels to use.
+  * @param emptyValue String to represent None.
+  */
+  def labelRows(labels: Vector[String],emptyValue: String = "-") : Vector[Vector[String]] = {
+    require(labels.size == rows, "Number of labels must equal number of rows.")
+    val stringTable = FeatureMatrix.stringTable(features, emptyValue)
+    FeatureMatrix.labelRows(stringTable, labels)
+  }
 
+  /** Compose text table with columns labelled.
+  *
+  * @param labels List of labels to use.
+  * @param emptyValue String to represent None.
+  */
+  def labelColumns(labels: Vector[String],
+  emptyValue: String = "-"): Vector[Vector[String]] = {
+      require(labels.size == columns, "Number of labels must equal number of columns.")
+      val stringTable = FeatureMatrix.stringTable(features, emptyValue)
+      FeatureMatrix.labelColumns(stringTable, labels)
+  }
 
-
-
-/*
-  def labelRows(labels: Vector[String],
-  ): Vector[Vector[String]] = {
-    require(labels.size == columns, "Number of labels must equal number of columns.")
-    //val labelled =
-    //labelled
-    Vector[Vector.empty[String]]
-  }*/
-
-  /*def labelColumns(labels: Vector[String],
-  emptyValue: String = "-")
-*/
-
-
+// REWORK THIS
   /** Generate String view of matrix.
   *
   * @param emptyString String to use for None values.
@@ -191,6 +197,7 @@ object FeatureMatrix extends LogSupport {
   * @param labels List of labels to apply.
   */
   def labelColumns(featureStrings: Vector[Vector[String]], labels: Vector[String]): Vector[Vector[String] ] = {
+    //featureStrings.zipWithIndex.map { case (row, i ) => labels(i) +: row }
     labels +: featureStrings
   }
 
@@ -200,9 +207,21 @@ object FeatureMatrix extends LogSupport {
   * @param labels List of labels to apply.
   */
   def labelRows(featureStrings: Vector[Vector[String]], labels: Vector[String]): Vector[Vector[String] ] = {
-    //require(rowLabels.size == rows, "Number of labels must equal number of rows.")
-    featureStrings.zipWithIndex.map { case (row, i ) => labels(i) +: row
+      //labels +: featureStrings
+    //val rows = stringTable(featureMatrix, emptyValue)
+
+
+    debug("SRC\n" + featureStrings.mkString("\n") + "\n")
+
+    val labelled = for ((row,i) <- featureStrings.zipWithIndex) yield {
+      val labelRow = labels(i) +: row
+      debug("LABEL ROW: " + labelRow)
+      labelRow
     }
+    //{ case (row, i ) =>  }
+    labelled
+    //featureStrings.map(rows => rows.map(_.mkString(separator)).mkString("\n")
+
   }
 
   /** Compose a delimited-text representation of a table of data options.
