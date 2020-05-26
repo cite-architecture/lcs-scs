@@ -1,6 +1,6 @@
 package edu.holycross.shot.seqcomp
-import scala.scalajs.js
-import scala.scalajs.js.annotation._
+//import scala.scalajs.js
+//import scala.scalajs.js.annotation._
 import scala.collection.mutable.ArrayBuffer
 import scala.annotation.tailrec
 
@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 * @param v1 First Vector to compare.
 * @param v2 Second Vector to compare.
 */
-@JSExportTopLevel("SequenceComp")
+//@JSExportTopLevel("SequenceComp")
 case class SequenceComp[T] (val v1: Vector[T], val v2: Vector[T])  {
 
   /** Create a memoizing array by comparing each pair of elements

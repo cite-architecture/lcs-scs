@@ -1,12 +1,12 @@
 package edu.holycross.shot.seqcomp
 
-import scala.scalajs.js
+//import scala.scalajs.js
 import wvlet.log._
 
 // JVM only:
-//import wvlet.log.LogFormatter.SourceCodeLogFormatter
+import wvlet.log.LogFormatter.SourceCodeLogFormatter
 
-import scala.scalajs.js.annotation._
+//import scala.scalajs.js.annotation._
 import scala.annotation.tailrec
 
 /** Two-dimensional matrix of features, organized by row.
@@ -14,7 +14,7 @@ import scala.annotation.tailrec
 * @param features Matrix of related features, as
 * Scala Options.
 */
-@JSExportTopLevel("FeatureMatrix")
+//@JSExportTopLevel("FeatureMatrix")
 case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) { //extends LogSupport {
 
   val columnCounts: Vector[Int] = features.map(_.size)

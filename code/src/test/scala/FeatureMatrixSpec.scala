@@ -42,4 +42,14 @@ class FeatureMatrixSpec extends FlatSpec {
 
   it should "object if the matrix is not fully populated by Options" in pending
 
+  it should "support selecting value by r,c reference" in pending
+
+  it should "offer a method to label columns" in pending
+
+  it should "offer a method to label rows" in pending
+
+  it should "create a list of indices for a given value" in pending
+
+  it should "find diagonally adjacent values" in pending
+
 }
