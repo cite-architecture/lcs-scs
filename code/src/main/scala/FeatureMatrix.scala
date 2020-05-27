@@ -114,65 +114,70 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
 
 object FeatureMatrix extends LogSupport {
 
-    /** Tabulate a matrix of features from
-    * multiple lists of data values.
-    *
-    * @param features Two-dimensional Vector of data values.
-    * Values are ordered, but lists may be of different lengths.
-    * @param vectorsByRow True if resulting matrix should be
-    * organized rows-first.
-    */
-    def apply[T](
-      features: Vector[Vector[T]],
-      vectorsByRow: Boolean = true,
-      includeScs: Boolean = false
-    ): FeatureMatrix[T] = {
-      val superseq =  SequenceComp.scs(features)
-      matrix(superseq, features, vectorsByRow, includeScs, Vector(superseq.map(Some(_))))
-    }
+
+  def fromDataTable[T](table: Vector[Vector[T]]): FeatureMatrix[T] = {
+    val dataOptions = table.map(row => row.map(col => Some(col)))
+    FeatureMatrix(features = dataOptions)
+  }
+  /** Tabulate a matrix of features from
+  * multiple lists of data values.
+  *
+  * @param features Two-dimensional Vector of data values.
+  * Values are ordered, but lists may be of different lengths.
+  * @param vectorsByRow True if resulting matrix should be
+  * organized rows-first.
+  */
+  def apply[T](
+    features: Vector[Vector[T]],
+    vectorsByRow: Boolean = true,
+    includeScs: Boolean = false
+  ): FeatureMatrix[T] = {
+    val superseq =  SequenceComp.scs(features)
+    matrix(superseq, features, vectorsByRow, includeScs, Vector(superseq.map(Some(_))))
+  }
 
 
-    /** Recursively tabulate a matrix of features from
-    * multiple lists of data values.
-    *
-    * @param supersequence The shortest common supersequence of
-    * all data values in features.
-    * @param features Two-dimensional Vector of data values.
-    * Values are ordered, but lists may be of different lengths.
-    * @param vectorsByRow True if resulting matrix should be
-    * organized rows-first.
-    * @param compiled Cumulative tabulation so far.
-    */
-    def matrix[T](
-      supersequence: Vector[T],
-      features: Vector[Vector[T]],
-      vectorsByRow: Boolean,
-      includeScs: Boolean = false,
-      compiled: Vector[Vector[Option[T]]]
-    ) : FeatureMatrix[T] = {
-      if (features.isEmpty) {
-        if (vectorsByRow) {
-          FeatureMatrix(compiled)
-        } else {
-          FeatureMatrix(compiled).transpose
-        }
+  /** Recursively tabulate a matrix of features from
+  * multiple lists of data values.
+  *
+  * @param supersequence The shortest common supersequence of
+  * all data values in features.
+  * @param features Two-dimensional Vector of data values.
+  * Values are ordered, but lists may be of different lengths.
+  * @param vectorsByRow True if resulting matrix should be
+  * organized rows-first.
+  * @param compiled Cumulative tabulation so far.
+  */
+  def matrix[T](
+    supersequence: Vector[T],
+    features: Vector[Vector[T]],
+    vectorsByRow: Boolean,
+    includeScs: Boolean = false,
+    compiled: Vector[Vector[Option[T]]]
+  ) : FeatureMatrix[T] = {
+    if (features.isEmpty) {
+      if (vectorsByRow) {
+        FeatureMatrix(compiled)
+      } else {
+        FeatureMatrix(compiled).transpose
+      }
+
+    } else {
+      val pairing  = SequenceComp(supersequence, features.head).align
+      val rightValues : Vector[Option[T]] =  pairing.map(_.right)
+      val newColumn = if (rightValues.size  < supersequence.size) {
+        val diff = supersequence.size - rightValues.size
+        val addedNulls = for (i <- 1 to diff) yield { None }
+        rightValues ++ addedNulls.toVector
 
       } else {
-        val pairing  = SequenceComp(supersequence, features.head).align
-        val rightValues : Vector[Option[T]] =  pairing.map(_.right)
-        val newColumn = if (rightValues.size  < supersequence.size) {
-          val diff = supersequence.size - rightValues.size
-          val addedNulls = for (i <- 1 to diff) yield { None }
-          rightValues ++ addedNulls.toVector
-
-        } else {
-          rightValues
-        }
-        val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
-
-        matrix(supersequence,  features.tail, vectorsByRow, includeScs, newComposite)
+        rightValues
       }
+      val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
+
+      matrix(supersequence,  features.tail, vectorsByRow, includeScs, newComposite)
     }
+  }
 
 
   /** Compose a table of text values for a matrix of features.
@@ -232,7 +237,7 @@ object FeatureMatrix extends LogSupport {
   * delimited-text output.
   */
   def delimited(featureMatrix: Vector[Vector[Any]], emptyValue: String = "-", separator: String = "|"): String = {
-    //Logger.setDefaultLogLevel(LogLevel.DEBUG)
+    //Logger.setDefaultLogLevel(LogLevel.INFO)
     val rows = stringTable(featureMatrix, emptyValue)
     rows.map(_.mkString(separator)).mkString("\n")
   }

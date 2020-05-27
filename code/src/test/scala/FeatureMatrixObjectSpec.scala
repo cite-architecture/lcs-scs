@@ -23,7 +23,7 @@ class FeatureMatrixObjectSpec extends FlatSpec {
   }
 
   it should "support organizing the resulting FeatureMatrix by either rows or columns first" in {
-    val byRows =  FeatureMatrix( many)
+    val byRows =  FeatureMatrix(many)
     val byColumns =  FeatureMatrix( many, vectorsByRow = false)
 
     assert(byRows.rows == byColumns.columns)
@@ -44,20 +44,36 @@ class FeatureMatrixObjectSpec extends FlatSpec {
       assert(delimited == expected)
     }
 
-    it should "offer a method to label rows" in {
+    it should "create a FeatureMatrix instance from a table of data values" in {
+      // Convert FeatureMatrix to table of String values:
       val stringTable = FeatureMatrix.stringTable(matrix.features)
-      //val stringMatrix = FeatureMatrix(stringTable)
+      val stringMatrix: FeatureMatrix[String] = FeatureMatrix.fromDataTable(stringTable)
+      val expectedRows = 4
+      val expectedColumns = 7
+      assert(stringMatrix.rows == expectedRows)
+      assert(stringMatrix.columns == expectedColumns)
+    }
+    it should "offer a method to label rows" in pending /* {
+      val stringTable = FeatureMatrix.stringTable(matrix.features)
+      val stringMatrix = FeatureMatrix(features = stringTable)
 
       val labelledTable = FeatureMatrix.labelRows(stringTable, labels)
       //val labelledMatrix = FeatureMatrix(labelledTable)
 
       println("STRINGS: \n" + stringTable.mkString("\n"))
       println("ROWS LABELLED\n" + labelledTable.mkString("\n"))
+
+
+      println("STRINGS MATRIX:\n" + stringMatrix.features.mkString("\n"))
+      println("STRINGS MATR  r/c: " + stringMatrix.rows  + "/" + stringMatrix.columns)
+
+
+
       //assert(stringMatrix.columns == labelledMatrix.columns - 1)
       //assert(labelledTable.map(_(0)) == labels)
-    }
+    }*/
 
-    it should "offer a method to label columns" in {
+    it should "offer a method to label columns" in pending /* {
       val stringTable = FeatureMatrix.stringTable(matrix.transpose.features)
       //val stringMatrix = FeatureMatrix(stringTable)
       println("STRINGS:\n" + stringTable.mkString("\n"))
@@ -70,6 +86,6 @@ class FeatureMatrixObjectSpec extends FlatSpec {
       //assert(stringMatrix.columns == labelledMatrix.columns - 1)
       //assert(labelledTable(0) == labels)
 
-    }
+    }*/
 
 }
