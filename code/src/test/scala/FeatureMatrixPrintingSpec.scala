@@ -11,7 +11,7 @@ class FeatureMatrixPrintingSpec extends FlatSpec {
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
   val labels = Vector("SCS", "long", "short", "spotty")
-  val matrix =  FeatureMatrix( many)
+  val matrix =  FeatureMatrix( many, includeScs = true)
 
   "A FeatureMatrix's pretty print formatting" should  "print formatted strings" in {
     val expected = "a b c d e f g\na b c d - f g\n- b c d e - -\na - c - e f g"

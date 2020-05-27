@@ -10,7 +10,7 @@ class FeatureMatrixObjectSpec extends FlatSpec {
   val b = Vector("b","c","d", "e")
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
-  val matrix =  FeatureMatrix( many)
+  val matrix =  FeatureMatrix( many, includeScs = true)
 
   val labels = Vector("SCS", "long", "short", "spotty")
 

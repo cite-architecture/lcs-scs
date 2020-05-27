@@ -6,4 +6,4 @@ package edu.holycross.shot.seqcomp
 /**
 */
 //@JSExportTopLevel("CellIndex")
-case class CellIndex[T] (r: Int, c: Int)
+case class IndexedValue[T] (v: Option[T], r: Int, c: Int)

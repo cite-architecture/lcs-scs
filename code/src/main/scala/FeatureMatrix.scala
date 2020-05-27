@@ -19,6 +19,13 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
   val columnCounts: Vector[Int] = features.map(_.size)
   require(columnCounts.distinct.size == 1, "Unbalanced matrix: rows have different numbers of columns.")
 
+
+  lazy val indexedCells = {
+    val indexedVals = features.zipWithIndex.map{ case (row,i) =>
+    row.zipWithIndex.map{ case (col, j)  => (IndexedValue(col,i,j)) }}
+    indexedVals.flatten
+  }
+
   /** Number of columns in the [[FeatureMatrix]].*/
   def columns: Int = columnCounts(0)
 
@@ -41,13 +48,8 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
     features(r)(c)
   }
 
-  /** Retrieve value of matrix identified by
-  * CellIndex object.
-  *
-  * @param idx Type-parameterized [[CellIndex]].
-  */
-  def cell(idx: CellIndex[T]): Option[T] = {
-    features(idx.r)(idx.c)
+  def cellIndex(cellValue: Option[T]): Vector[IndexedValue[T]] = {
+    indexedCells.filter(_.v == cellValue)
   }
 
 
@@ -176,7 +178,12 @@ object FeatureMatrix extends LogSupport {
     includeScs: Boolean = false
   ): FeatureMatrix[T] = {
     val superseq =  SequenceComp.scs(features)
-    matrix(superseq, features, vectorsByRow, includeScs, Vector(superseq.map(Some(_))))
+
+    if (includeScs) {
+      matrix(superseq, features, vectorsByRow, includeScs, Vector(superseq.map(Some(_))))
+    } else {
+      matrix(superseq, features, vectorsByRow, includeScs, Vector.empty)
+    }
   }
 
 
@@ -199,6 +206,8 @@ object FeatureMatrix extends LogSupport {
     compiled: Vector[Vector[Option[T]]]
   ) : FeatureMatrix[T] = {
     if (features.isEmpty) {
+      // all features converted to options:
+      // make matrix from them
       if (vectorsByRow) {
         FeatureMatrix(compiled)
       } else {
@@ -218,7 +227,11 @@ object FeatureMatrix extends LogSupport {
       }
       val newComposite: Vector[Vector[Option[T]]] = compiled :+ newColumn
 
-      matrix(supersequence,  features.tail, vectorsByRow, includeScs, newComposite)
+      matrix(supersequence,
+        features.tail,
+        vectorsByRow,
+        includeScs,
+        newComposite)
     }
   }
 

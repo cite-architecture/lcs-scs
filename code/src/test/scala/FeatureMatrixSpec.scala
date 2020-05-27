@@ -11,7 +11,7 @@ class FeatureMatrixSpec extends FlatSpec {
   val c = Vector("a", "c", "e", "f", "g")
   val many = Vector(a,b,c)
   val labels = Vector("SCS", "long", "short", "spotty")
-  val matrix =  FeatureMatrix( many)
+  val matrix =  FeatureMatrix( many, includeScs = true)
 
   "A FeatureMatrix" should "have a two-dimensional Vector of type-parameterized Options" in {
     // Test example uses Strings as underlying type:
@@ -21,7 +21,13 @@ class FeatureMatrixSpec extends FlatSpec {
     }
   }
 
-  it should "make inclusion of computed SCS option" in pending
+  it should "make inclusion of computed SCS option" in {
+    val withScs =    FeatureMatrix( many, includeScs = true)
+    val withoutScs =    FeatureMatrix( many, includeScs = false)
+
+    assert(withScs.rows ==  withoutScs.rows + 1)
+
+  }
 
   it should "count rows" in {
     // 3 rows of source data plus automatically built SCS
@@ -44,12 +50,6 @@ class FeatureMatrixSpec extends FlatSpec {
   it should "support selecting value by r,c reference" in {
     val expected = Some("a")
     assert(matrix.cell(0,0) == expected)
-  }
-
-  it should "select values by CellIndex" in {
-    val ci: CellIndex[String] = CellIndex(0,0)
-    val expected = Some("a")
-    assert(matrix.cell(ci) == expected)
   }
 
   it should "create a string table" in {
@@ -89,7 +89,17 @@ class FeatureMatrixSpec extends FlatSpec {
     assert(actual == expected)
   }
 
-  it should "create a list of indices for a given value" in pending
+  it should "lazily index all cells in the matrix" in {
+    val idx = matrix.indexedCells
+    // 4 rows x 7 cols
+    val expectedSize = 28
+    assert(idx.size == expectedSize)
+  }
+
+  it should "create a list of indices for a given value" in {
+    val noneValues = matrix.cellIndex(None)
+    println(noneValues)
+  }
 
   it should "find diagonally adjacent values" in pending
 
