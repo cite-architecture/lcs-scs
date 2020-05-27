@@ -21,6 +21,8 @@ class FeatureMatrixSpec extends FlatSpec {
     }
   }
 
+  it should "make inclusion of computed SCS option" in pending
+
   it should "count rows" in {
     // 3 rows of source data plus automatically built SCS
     val expectedRows = 4
@@ -50,11 +52,42 @@ class FeatureMatrixSpec extends FlatSpec {
     assert(matrix.cell(ci) == expected)
   }
 
-  it should "format a delimited-text version of the table" in pending
+  it should "create a string table" in {
+    val strTable = matrix.stringTable()
+    strTable match {
+      case t: Vector[Vector[String]] => assert(true)
+      case _ => fail("Did not create correct type of table.")
+    }
+  }
 
-  it should "create a string table" in pending
-  it should "create a string table with rows labelled" in pending
-  it should "create a string table with columns labelled" in pending
+  it should "create a string table with rows labelled" in {
+    val labelledRows = matrix.labelRows(labels)
+    // check size by making a new Matrix from it:
+    val labelledMatrix = FeatureMatrix.fromDataTable(labelledRows)
+    assert(matrix.columns == labelledMatrix.columns - 1)
+    assert(matrix.rows == labelledMatrix.rows)
+  }
+
+
+  it should "create a string table with columns labelled" in {
+    val labelledCols = matrix.transpose.labelColumns(labels)
+    // check size by making a new Matrix from it:
+    val labelledMatrix = FeatureMatrix.fromDataTable(labelledCols)
+    assert(matrix.transpose.columns == labelledMatrix.columns)
+    assert(matrix.transpose.rows == labelledMatrix.rows - 1)
+  }
+
+  it should "format a delimited-text version of the table" in {
+    val actual = matrix.delimited()
+    val expected = "a|b|c|d|e|f|g\na|b|c|d|-|f|g\n-|b|c|d|e|-|-\na|-|c|-|e|f|g"
+    assert(actual == expected)
+  }
+
+  it should "format a markdown version of the table" in {
+    val actual = matrix.markdown(labels)
+    val expected = "|  | 0 | 1 | 2 | 3 | 4 | 5 | 6 |\n|  ---  |  ---  |  ---  |  ---  |  ---  |  ---  |  ---  |  ---  |\n| **SCS** | a | b | c | d | e | f | g |\n| **long** | a | b | c | d | - | f | g |\n| **short** | - | b | c | d | e | - | - |\n| **spotty** | a | - | c | - | e | f | g |"
+    assert(actual == expected)
+  }
 
   it should "create a list of indices for a given value" in pending
 

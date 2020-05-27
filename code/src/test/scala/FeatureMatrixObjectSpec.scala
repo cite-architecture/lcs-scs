@@ -53,39 +53,33 @@ class FeatureMatrixObjectSpec extends FlatSpec {
       assert(stringMatrix.rows == expectedRows)
       assert(stringMatrix.columns == expectedColumns)
     }
-    it should "offer a method to label rows" in pending /* {
+
+    it should "offer a method to label rows" in  {
       val stringTable = FeatureMatrix.stringTable(matrix.features)
-      val stringMatrix = FeatureMatrix(features = stringTable)
+      val stringMatrix = FeatureMatrix.fromDataTable(stringTable)
 
       val labelledTable = FeatureMatrix.labelRows(stringTable, labels)
-      //val labelledMatrix = FeatureMatrix(labelledTable)
+      val labelledMatrix = FeatureMatrix.fromDataTable(labelledTable)
 
-      println("STRINGS: \n" + stringTable.mkString("\n"))
-      println("ROWS LABELLED\n" + labelledTable.mkString("\n"))
+      //println("STRINGS: \n" + stringTable.mkString("\n"))
+      //println("ROWS LABELLED\n" + labelledTable.mkString("\n"))
+      //println("STRINGS MATRIX:\n" + stringMatrix.features.mkString("\n"))
+      //println("STRINGS MATR  r/c: " + stringMatrix.rows  + "/" + stringMatrix.columns)
 
+      assert(stringMatrix.columns == labelledMatrix.columns - 1)
+      assert(labelledTable.map(_(0)) == labels)
+    }
 
-      println("STRINGS MATRIX:\n" + stringMatrix.features.mkString("\n"))
-      println("STRINGS MATR  r/c: " + stringMatrix.rows  + "/" + stringMatrix.columns)
-
-
-
-      //assert(stringMatrix.columns == labelledMatrix.columns - 1)
-      //assert(labelledTable.map(_(0)) == labels)
-    }*/
-
-    it should "offer a method to label columns" in pending /* {
+    it should "offer a method to label columns" in {
       val stringTable = FeatureMatrix.stringTable(matrix.transpose.features)
-      //val stringMatrix = FeatureMatrix(stringTable)
-      println("STRINGS:\n" + stringTable.mkString("\n"))
-      println("ADD LABELS:\n" + labels.mkString(", "))
+      val stringMatrix = FeatureMatrix.fromDataTable(stringTable)
+
       val labelledTable = FeatureMatrix.labelColumns(stringTable, labels)
+      val labelledMatrix = FeatureMatrix.fromDataTable(labelledTable)
 
-      println("COLS LABELLED\n" + labelledTable.mkString("\n"))
-      //val labelledMatrix = FeatureMatrix(labelledTable)
+      assert(stringMatrix.columns == labelledMatrix.columns)
+      assert(labelledTable(0) == labels)
 
-      //assert(stringMatrix.columns == labelledMatrix.columns - 1)
-      //assert(labelledTable(0) == labels)
-
-    }*/
+    }
 
 }

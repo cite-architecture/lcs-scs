@@ -50,6 +50,15 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
     features(idx.r)(idx.c)
   }
 
+
+  /** Compose a table of String values from features.
+  *
+  * @param emptyValue String to use for occurrences of None.
+  */
+  def stringTable(emptyValue: String = "-"): Vector[Vector[String]] = {
+    FeatureMatrix.stringTable(features, emptyValue)
+  }
+
   /** Compose text table with rows labelled.
   *
   * @param labels List of labels to use.
@@ -57,8 +66,8 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
   */
   def labelRows(labels: Vector[String],emptyValue: String = "-") : Vector[Vector[String]] = {
     require(labels.size == rows, "Number of labels must equal number of rows.")
-    val stringTable = FeatureMatrix.stringTable(features, emptyValue)
-    FeatureMatrix.labelRows(stringTable, labels)
+    val strTable: Vector[Vector[String]] = stringTable(emptyValue)
+    FeatureMatrix.labelRows(strTable, labels)
   }
 
   /** Compose text table with columns labelled.
@@ -69,10 +78,39 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
   def labelColumns(labels: Vector[String],
   emptyValue: String = "-"): Vector[Vector[String]] = {
       require(labels.size == columns, "Number of labels must equal number of columns.")
-      val stringTable = FeatureMatrix.stringTable(features, emptyValue)
-      FeatureMatrix.labelColumns(stringTable, labels)
+      val strTable: Vector[Vector[String]] = stringTable(emptyValue)
+      FeatureMatrix.labelColumns(strTable, labels)
   }
 
+  /** Compose a delimited-text representation of the matrix.
+  *
+  * @param emptyValue String to use for None values.
+  * @param separator String to use in separating columns of the
+  * delimited-text output.
+  */
+  def delimited(emptyValue: String = "-", separator: String = "|") = {
+    FeatureMatrix.delimited(features, emptyValue, separator)
+  }
+
+
+  /** Create a markdown table.
+  *
+  * @param rowLabels List of labels to use for rows.
+  * @param emptyValue String to use for None.
+  */
+  def markdown(rowLabels: Vector[String] = Vector.empty[String],
+    emptyValue: String = "-" ): String = {
+    val labels = if (rowLabels.isEmpty) {
+      (0 to rows - 1).toVector.map(_.toString)
+    } else { rowLabels }
+    val rowsLabelled = labelRows(labels.map(lbl => s"**${lbl}**"), emptyValue)
+    val columnLabels = "" +: (0 to columns - 1).toVector.map(_.toString)
+    val allLabelled = FeatureMatrix.labelColumns(rowsLabelled, columnLabels)
+    val hdrRule = for (i <- 0 to columns) yield {" --- "}
+    val lines = Vector(allLabelled.head, hdrRule.toVector) ++ allLabelled.tail
+
+    lines.map(l => "| " + l.mkString(" | ") + " |").mkString("\n")
+  }
 // REWORK THIS
   /** Generate String view of matrix.
   *
@@ -114,11 +152,16 @@ case class FeatureMatrix[T] (features: Vector[Vector[Option[T]]]) extends LogSup
 
 object FeatureMatrix extends LogSupport {
 
-
+  /** Create a [[FeatureMatrix]] instance from a two-dimensional
+  * table of values by converting values to Options.
+  *
+  * @param table Two-dimensional table of values of type T.
+  */
   def fromDataTable[T](table: Vector[Vector[T]]): FeatureMatrix[T] = {
     val dataOptions = table.map(row => row.map(col => Some(col)))
     FeatureMatrix(features = dataOptions)
   }
+
   /** Tabulate a matrix of features from
   * multiple lists of data values.
   *
@@ -180,10 +223,11 @@ object FeatureMatrix extends LogSupport {
   }
 
 
-  /** Compose a table of text values for a matrix of features.
+  /** Compose a table of String values from a table of values
+  * of possibly mixed type.
   *
-  * @param featureMatrix
-  * @param emptyValue
+  * @param featureMatrix Two-dimensional matrix of features (Options).
+  * @param emptyValue String to use for occurrences of None.
   */
   def stringTable(featureMatrix: Vector[Vector[Any]], emptyValue: String = "-") : Vector[Vector[String]] = {
     featureMatrix.map (row => row.map( cell => {
