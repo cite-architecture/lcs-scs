@@ -1,5 +1,7 @@
 # Release notes
 
+**2.2.1**: correct publication of binaries.
+
 **2.2.0**: support cross building.
 
 **2.1.0**: extensive expansions of the `FeatureMatrix` class and companion object including string formatting methods and indexing/retrieval methods.

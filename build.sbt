@@ -4,6 +4,7 @@ lazy val scala212 = "2.12.10"
 lazy val supportedScalaVersions = List(scala212, scala211)
 
 ThisBuild / scalaVersion := scala212
+ThisBuild / turbo := true
 
 lazy val root = (project in file("."))
   .aggregate(crossed.js, crossed.jvm)
@@ -16,8 +17,9 @@ lazy val root = (project in file("."))
 lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   // shared settings:
   settings(
+    organization :=  "edu.holycross.shot",
     name := "seqcomp",
-    version := "2.2.0",
+    version := "2.2.1",
     licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
 
     resolvers += Resolver.jcenterRepo,
@@ -42,11 +44,15 @@ lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
 
 
 
-lazy val docs = project       // new documentation project
-  .in(file("docs-build")) // important: it must not be docs/
-  .dependsOn(crossed.jvm)
-  .enablePlugins(MdocPlugin)
-  .settings(
-    mdocIn := file("guide"),
-    mdocOut := file("mdocs")
-  )
+  lazy val docs = project       // new documentation project
+    .in(file("docs-build")) // important: it must not be docs/
+    .dependsOn(crossed.jvm)
+    .enablePlugins(MdocPlugin)
+    .settings(
+      mdocIn := file("guide"),
+      mdocOut := file("docs"),
+      mdocExtraArguments := Seq("--no-link-hygiene"),
+      mdocVariables := Map(
+       "VERSION" -> "2.2.1"
+     )
+    )
