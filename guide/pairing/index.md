@@ -1,7 +1,11 @@
 ---
 layout: page
 title: The Pairing class
+parent: "The lcs-scs library"
+nav_order: 2
 ---
+
+**Version @VERSION@**
 
 # The `Pairing` class
 

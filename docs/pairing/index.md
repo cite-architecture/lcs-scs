@@ -1,9 +1,13 @@
 ---
 layout: page
 title: The Pairing class
+parent: "The lcs-scs library"
+nav_order: 2
 ---
 
+**Version 2.2.1**
 
+# The `Pairing` class
 
 Alignment produces a Vector of `Pairing`s.
 

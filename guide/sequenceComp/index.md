@@ -1,7 +1,12 @@
 ---
 layout: page
 title: The SequenceComp class
+parent: "The lcs-scs library"
+nav_order: 1
 ---
+
+
+**Version @VERSION@**
 
 # The `SequenceComp` class
 

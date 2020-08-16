@@ -1,9 +1,14 @@
 ---
 layout: page
 title: The SequenceComp class
+parent: "The lcs-scs library"
+nav_order: 1
 ---
 
-## The `SequenceComp` class
+
+**Version 2.2.1**
+
+# The `SequenceComp` class
 
 A `SequenceComp` instance compares two Vectors of ordered values of any type.  The `SequenceComp` can find their longest common subsequence and their shortest common supersequence, and can align them against each other.
 
