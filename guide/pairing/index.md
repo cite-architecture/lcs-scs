@@ -3,7 +3,7 @@ layout: page
 title: The Pairing class
 ---
 
-
+# The `Pairing` class
 
 Alignment produces a Vector of `Pairing`s.
 
