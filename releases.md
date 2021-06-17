@@ -1,5 +1,7 @@
 # Release notes
 
+**2.2.2**: Forked into CiteArchitecture. Artifact published now at https://terracotta.hpcc.uh.edu/nexus/repository/maven-releases/
+
 **2.2.1**: correct publication of binaries.
 
 **2.2.0**: support cross building.
